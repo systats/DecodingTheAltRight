@@ -2,7 +2,7 @@
 title: "Decoding the Alt-Right"
 subtitle: "A Machine Learning Project"
 author: "Simon & Fabio"
-date: "2018/05/10"
+date: "2018/05/10 <br> <br> Slides: <a href='decoding-the-altright.netlify.com'>https://decoding-the-altright.netlify.com/ </a>"
 output:
   xaringan::moon_reader:
     lib_dir: libs
