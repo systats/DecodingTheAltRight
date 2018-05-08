@@ -128,8 +128,9 @@ Goal:
 2. Data Collection
 3. Coding Framework
 4. Machine Learning
-5. Case Study: Unite the Right Charlottesville Rally
+5. Prediction and Case Study
 6. Policy Implications
+
 ]
 
 
@@ -435,6 +436,7 @@ class: inverse, center, middle
 
 ## Training Sample
 
+
 *Our Approach:*
 
 --
@@ -455,11 +457,12 @@ class: inverse, center, middle
 
 --
 
-+  Krippendorf's	&alpha; shows intercoder reliablity of around .5 (increases after burn-in phase)
++  Krippendorf's &alpha; shows intercoder reliablity of around .5 (increases after burn-in phase)
 
 --
 
 +  In total we labeled `r nrow(dt)` comments and tweets.
+
 
 ---
 
@@ -653,13 +656,6 @@ dt %>%
 
 ---
 
-## Descriptives of Labeled Data
-
-**TODO**
-
-
----
-
 class: inverse, center, middle
 
 
@@ -670,13 +666,95 @@ class: inverse, center, middle
 
 ## Machine Learning
 
-**TODO**
+
+.pull-left[
+
+**What do we predict?**
+
+Core Alt-Right indicators
+
+* White Identity
+* Anti-Sementism 
+* Racism
+
+
+**Best Model**
+
+* Most promising *Decision Trees*
+* Variant: *Gradient Boosted Machines*
+* Robust method
+* Bag of words model with bigrams
+
+]
+.pull-right[
+
+<img src = "images/new_gbm.png" align="bottom">
+
+]
+
+
+---
+
+## Hyperparameter Tuning
+
+<center>
+<img src = "images/mbo_search.png" width = "80%">
+</center>
+
+---
+
+## Machine Learning
+
+.pull-left[
+
+<br>
+
+
+```{r,}
+library(DT)
+models <- get(load("data/gbm_10.Rdata"))
+models_data <- models$params %>%
+  dplyr::arrange(desc(accuracy)) %>%
+  dplyr::select(accuracy, ngram, max_vocab, ntrees, max_depth, arch) 
+  
+library(formattable)
+library(knitr)
+library(kableExtra)
+models_data %>%
+  slice(c(1,3,6,7,8,15,20,30,33,36)) %>%
+  mutate(
+    # car = row.names(.),
+    # mpg = color_tile("white", "orange")(mpg),
+    # cyl = cell_spec(cyl, "html", angle = (1:5)*60, 
+    #                 background = "red", color = "white", align = "center"),
+    # disp = ifelse(disp > 200,
+    #               cell_spec(disp, "html", color = "red", bold = T),
+    #               cell_spec(disp, "html", color = "green", italic = T)),
+    accuracy = color_bar("red")(accuracy)
+  ) %>%
+  knitr::kable("html", escape = F) %>%
+  kable_styling("hover", full_width = F, font_size = 11)
+  #add_header_above(c(" ", "Hello" = 2, "World" = 2))
+  
+  # datatable(
+  #     select = "single", rownames = F
+  #   ) %>%
+  #   formatStyle(
+  #     "accuracy",
+  #     background = styleColorBar(range(models_data %>% dplyr::select(accuracy)), 'blue'),
+  #     backgroundSize = '98% 88%',
+  #     backgroundRepeat = 'no-repeat',
+  #     backgroundPosition = 'center'
+  #   )
+```
+
+]
 
 .pull-right[
 
 ```{r}
-x <- c(1, 0 , 1, 1, 0, 1, 1, 0, 1)
-y <- c(1, 1 ,0, 1, 0, 1, 1, 0, 0)
+# x <- c(1, 0 , 1, 1, 0, 1, 1, 0, 1)
+# y <- c(1, 1 ,0, 1, 0, 1, 1, 0, 0)
 
 confusion_real <- function (x, y, lib = "hchart", text_resize = F, info = F, info_list = F, 
   ...) 
@@ -707,14 +785,14 @@ confusion_real <- function (x, y, lib = "hchart", text_resize = F, info = F, inf
       mutate(real = factor(real)) %>% ggplot2::ggplot(ggplot2::aes(real, 
       preds, fill = n)) + ggplot2::geom_tile(alpha = 0.8) + 
       viridis::scale_fill_viridis(direction = -1) + scale_x_discrete(position = "top") + 
-      ggthemes::theme_few() + theme(legend.position = "none") + 
+      ggthemes::theme_few() + theme(legend.position = "none", text = element_text(size = 20)) + 
       coord_equal() + labs(x = "Real value y", y = "Predicted value y hat")
     if (text_resize) {
       gg <- gg + ggplot2::geom_text(aes(label = label, 
         size = n))
     }
     else {
-      gg <- gg + ggplot2::geom_text(aes(label = label))
+      gg <- gg + ggplot2::geom_text(aes(label = label, size = 100))
     }
     if (info) {
       gg_info <- eval %>% dplyr::mutate_all(function(x) round(x, 
@@ -723,8 +801,8 @@ confusion_real <- function (x, y, lib = "hchart", text_resize = F, info = F, inf
         ggplot2::ggplot(aes(level, value, fill = level)) + 
         ggplot2::geom_bar(stat = "identity", alpha = 0.7) + 
         ggplot2::facet_wrap(~metric, ncol = 2) + ggthemes::theme_few() + 
-        ggplot2::labs(x = "", y = "", caption = paste0("Accuracy: ", 
-          acc)) + ggplot2::theme(legend.position = "none")
+        ggplot2::labs(x = "", y = "" #caption = paste0("Accuracy: ", acc)
+          ) + ggplot2::theme(legend.position = "none")
       if (!info_list) {
         scale_fill_party <- function() {
           ggplot2::scale_fill_manual("", values = c("#46962b", 
@@ -748,7 +826,7 @@ confusion_real <- function (x, y, lib = "hchart", text_resize = F, info = F, inf
       levels = sort(unique(preds), decreasing = T))) %>% 
       dplyr::mutate(real = factor(real)) %>% ggplot2::ggplot(ggplot2::aes(real, 
       preds, fill = n, text = paste("percent:", perc_real))) + 
-      ggplot2::geom_tile() + viridis::scale_fill_viridis(direction = -1) + 
+      ggplot2::geom_tile(alpha = .7) + viridis::scale_fill_viridis(direction = -1) + 
       ggplot2::scale_x_discrete(position = "top") + ggthemes::theme_few() + 
       ggplot2::theme(legend.position = "none") + ggplot2::labs(x = "Real value y", 
       y = "Predicted value y hat")
@@ -766,25 +844,66 @@ confusion_real <- function (x, y, lib = "hchart", text_resize = F, info = F, inf
 }
 
 
-# library(tidyTX)
-# tidyTX::tx_confusion(x, y)
-
-confusion_real(x, y, lib = "gg") +
-  scale_fill_continuous(low = "gray70", high = "red")
-
-
+gbm_confusion <- get(load("data/gbm_10_0_1.Rdata"))
+#table(gbm_confusion$perform, gbm_confusion$data$test$altright1)
+confusion_real(gbm_confusion$perform, gbm_confusion$data$test$altright1, lib = "gg") +
+  scale_fill_continuous(low = "white", high = "red")
 ```
-
-
-
 
 ]
 
+
 ---
 
+class: inverse, center, middle
+
+## Predictions
+
+---
+
+## Twitter 2017
+
 ```{r}
-#mat %>% d3heatmap::d3heatmap(mat, colors = "Spectral")
+library(highcharter)
+library(magrittr)
+
+load("data/dat_time_xts.Rdata")
+
 ```
+
+
+```{r}
+
+dat_time_xts %>% 
+  filter(platform == "Twitter") %>% 
+  highcharter::hchart(., "line", hcaes(x = cdate, y = perc, group = page)) %>% 
+      hc_add_theme(hc_theme_google()) %>% 
+      hc_title(text = "Percentage of Classified Comments per Day - Twitter",
+             style = list(fontSize = "18px")) %>% 
+  hc_xAxis(title = list(text = "Days in x Axis")) %>% 
+  hc_yAxis(title = list(text = "Percent")) %>% 
+  hc_tooltip(shared = T)
+```
+
+---
+
+## YouTube 2017
+
+```{r}
+
+dat_time_xts %>% 
+  filter(platform == "YouTube") %>% 
+  highcharter::hchart(., "line", hcaes(x = cdate, y = perc, group = page)) %>% 
+      hc_add_theme(hc_theme_google()) %>% 
+      hc_title(text = "Percentage of Classified Comments per Day - YouTube",
+             style = list(fontSize = "18px")) %>% 
+  hc_xAxis(title = list(text = "Days in x Axis")) %>% 
+  hc_yAxis(title = list(text = "Percent")) %>% 
+  hc_tooltip(shared = T)
+```
+
+
+
 
 ---
 
@@ -842,32 +961,6 @@ class: inverse, center, middle
 ## Case Study: Unite the Right Charlottesville Rally
 
 ```{r}
-library(highcharter)
-library(magrittr)
-
-load("data/dat_time_xts.Rdata")
-
-```
-
-
-```{r}
-
-dat_time_xts %>% 
-  filter(platform == "Twitter") %>% 
-  highcharter::hchart(., "line", hcaes(x = cdate, y = perc, group = page)) %>% 
-      hc_add_theme(hc_theme_google()) %>% 
-      hc_title(text = "Percentage of Classified Comments per Day - Twitter",
-             style = list(fontSize = "18px")) %>% 
-  hc_xAxis(title = list(text = "Days in x Axis")) %>% 
-  hc_yAxis(title = list(text = "Percent")) %>% 
-  hc_tooltip(shared = T)
-```
-
----
-
-## Case Study: Unite the Right Charlottesville Rally
-
-```{r}
 dat_time2 <- dat_time_xts %>%
   filter(cdate > as.Date("2017-08-06") & cdate < as.Date("2017-08-30")) 
 
@@ -896,24 +989,6 @@ dat_time2 %>%
   hc_tooltip(shared = T)
 
 
-```
-
-
----
-
-## Case Study: Unite the Right Charlottesville Rally
-
-```{r}
-
-dat_time_xts %>% 
-  filter(platform == "YouTube") %>% 
-  highcharter::hchart(., "line", hcaes(x = cdate, y = perc, group = page)) %>% 
-      hc_add_theme(hc_theme_google()) %>% 
-      hc_title(text = "Percentage of Classified Comments per Day - Twitter",
-             style = list(fontSize = "18px")) %>% 
-  hc_xAxis(title = list(text = "Days in x Axis")) %>% 
-  hc_yAxis(title = list(text = "Percent")) %>% 
-  hc_tooltip(shared = T)
 ```
 
 
@@ -961,14 +1036,6 @@ Possible other applications:
 * How does the Alt-Right react after terror attacks
 * Tracking stories and misinformation (like the hoax that two Syrian refugees were responsible for the Quebec Mosque Attack)
 * Distinguishing between Alt-Light and Alt-Right content
-
----
-
-
-
-## Case Study: Unite the Right Charlottesville Rally
-
-**TODO**
 
 ---
 
