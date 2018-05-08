@@ -1,0 +1,519 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+* Events:
+
+**5th July 2017**
+
+As Americans relaxed over a long Fourth of July weekend, the pro-Trump meme factories were gearing up for war.
+https://www.nytimes.com/2017/07/05/business/how-a-cnn-investigation-set-off-an-internet-meme-war.html
+
+**15th September 2017**
+
+September 14
+On September 14, conservative radio host Ben Shapiro gave a speech at the campus, which was covered by a crew for the political documentary No Safe Spaces.
+https://en.wikipedia.org/wiki/2017_Berkeley_protests
+
+News of Donald Trump reaching a possible **DACA deal** with Democratic congressional leaders has infuriated members of the alt-right. 
+https://mashable.com/2017/09/15/donald-trump-daca-alt-right-burn-maga-hat/#KjqWZV4nekqN
+
+**September 29, 2017**
+
+Evangelical leaders call on Trump to condemn the alt-right
+https://religionnews.com/2017/09/29/in-rare-letter-evangelical-leaders-call-on-trump-to-condemn-the-alt-right/
+
+**9th December 2017**
+
+This Saturday, a handful of demonstrations took place across the US that in several instances broke out into violent clashes between those on the far-Right and antifascists. On Saturday, December 9th, demonstrations and clashes broke out in a select few cities, including Portland, Oregon, San Diego, California, and Austin, Texas. Neo-Nazis who attended the Unite the Right rally in Charlottesville, VA.
+https://itsgoingdown.org/audio-report-austin-antifascists-mobilize-far-right/
+
+
+
+# load in packages
+
+```{r}
+pacman::p_load(tidyverse, highcharter, magrittr)
+```
+
+
+# vizz
+
+## media data
+
+```{r}
+# social_media <- get(load("data/abc.Rdata")) %>% 
+#   bind_rows(get(load("data/msnbc.Rdata"))) %>% 
+#   bind_rows(get(load("data/foxnews.Rdata"))) %>% 
+#   bind_rows(get(load("data/cnn.Rdata")))
+```
+
+## media
+
+## Case Study: Unite the Right Charlottesville Rally
+
+```{r}
+library(highcharter)
+library(magrittr)
+
+load("data/dat_time_xts.Rdata")
+
+```
+
+
+```{r}
+
+dat_time_xts %>% 
+  filter(platform == "Twitter") %>% 
+  highcharter::hchart(., "line", hcaes(x = cdate, y = perc, group = page)) %>% 
+      hc_add_theme(hc_theme_google()) %>% 
+      hc_title(text = "Percentage of Classified Comments per Day - Twitter",
+             style = list(fontSize = "18px")) %>% 
+  hc_xAxis(title = list(text = "Days in x Axis")) %>% 
+  hc_yAxis(title = list(text = "Percent")) %>% 
+  hc_tooltip(shared = T)
+```
+
+---
+
+## Case Study: Unite the Right Charlottesville Rally
+
+```{r}
+dat_time2 <- dat_time_xts %>%
+  filter(cdate > as.Date("2017-08-06") & cdate < as.Date("2017-08-30")) 
+
+
+dat_time2 %>% 
+  filter(platform == "Twitter") %>% 
+  highcharter::hchart(., "line", hcaes(x = cdate, y = perc, group = page)) %>% 
+      hc_add_theme(hc_theme_google()) %>% 
+      hc_title(text = "Percentage of Classified Comments per Day - Twitter",
+             style = list(fontSize = "18px")) %>% 
+  hc_xAxis(title = list(text = "Days in x Axis"),
+           plotLines = list(
+             list(label = list(text = "Unite the Right Rally"),
+                  color = "gray70",
+                  width = 2,
+                  value = datetime_to_timestamp(as.Date("2017-08-11")))),
+            plotBands = list(
+                list(
+                  label = list(text = ""),
+                  color = "rgba(100, 0, 0, 0.1)",
+                  from = datetime_to_timestamp(as.Date("2017-08-11")),
+                  to = datetime_to_timestamp(as.Date("2017-08-12"))
+               )
+            )) %>% 
+  hc_yAxis(title = list(text = "Percent")) %>% 
+  hc_tooltip(shared = T)
+
+
+```
+
+
+---
+
+## Case Study: Unite the Right Charlottesville Rally
+
+```{r}
+
+dat_time_xts %>% 
+  filter(platform == "YouTube") %>% 
+  highcharter::hchart(., "line", hcaes(x = cdate, y = perc, group = page)) %>% 
+      hc_add_theme(hc_theme_google()) %>% 
+      hc_title(text = "Percentage of Classified Comments per Day - Twitter",
+             style = list(fontSize = "18px")) %>% 
+  hc_xAxis(title = list(text = "Days in x Axis")) %>% 
+  hc_yAxis(title = list(text = "Percent")) %>% 
+  hc_tooltip(shared = T)
+```
+
+
+---
+
+## Case Study: Unite the Right Charlottesville Rally
+
+```{r}
+ 
+
+dat_time2 %>% 
+  filter(platform == "YouTube") %>% 
+  highcharter::hchart(., "line", hcaes(x = cdate, y = perc, group = page)) %>% 
+      hc_add_theme(hc_theme_google()) %>% 
+      hc_title(text = "Percentage of Classified Comments per Day - YouTube",
+             style = list(fontSize = "18px")) %>% 
+  hc_xAxis(title = list(text = "Days in x Axis"),
+           plotLines = list(
+             list(label = list(text = "Unite the Right Rally"),
+                  color = "gray70",
+                  width = 2,
+                  value = datetime_to_timestamp(as.Date("2017-08-11")))),
+            plotBands = list(
+                list(
+                  label = list(text = ""),
+                  color = "rgba(100, 0, 0, 0.1)",
+                  from = datetime_to_timestamp(as.Date("2017-08-11")),
+                  to = datetime_to_timestamp(as.Date("2017-08-12"))
+               )
+            )) %>% 
+  hc_yAxis(title = list(text = "Percent")) %>% 
+  hc_tooltip(shared = T)
+
+
+
+
+```
+
+#### old
+
+```{r, fig.width=15}
+
+
+dat_time_whole <- social_media %>%
+  #sample_n(size = 10000) %>%
+  filter(platform != "fb") %>%
+  group_by(platform, page, cdate) %>%
+  #tally() %>%
+  count(pred1) %>%
+  mutate(perc = n/sum(n)) %>%
+  ungroup()
+
+# gg1 <- dat_time_whole %>%
+# #  filter(!(page == "wapo" & platform == "yt" & cdate < as.Date("2017-06-01"))) %>%
+#   filter(pred1 == 1) %>%
+#   ggplot(aes(cdate, perc)) +
+#   geom_line() +
+#   scale_x_date() +
+#   facet_grid(page  ~ platform, scales = "free") +
+#   ggthemes::theme_hc() +
+#   geom_vline(xintercept = as.Date("2017-08-12"), color = "red") +
+#     geom_vline(xintercept = as.Date("2017-01-20"), color = "red")
+# #ggsave(gg1, file = "gg_time_all_media.png", width = 10)
+# gg1
+
+
+dat_time_xts <- dat_time_whole %>%
+  mutate(perc = round(100*perc, 2)) %>% 
+  mutate(platform = case_when(
+      platform == "fb" ~ "Facebook",
+      platform == "tw" ~ "Twitter",
+      platform == "yt" ~ "YouTube"
+    )
+  ) %>%
+    mutate(page = forcats::fct_recode(page, 
+                                    `CNN` = "cnn",
+                                    `ABC` = "abc",
+                                    `MSNBC` = "msnbc",
+                                    `New York Times` = "nyt",
+                                    `Washington Post` = "wapo",
+                                    `Fox News` = "foxnews"
+                                    )) %>% 
+  filter(platform != "fb") %>%
+  # filter(sent == 0) %>%
+  filter(pred1 == 1) %>%
+  na.omit() 
+
+save(dat_time_xts, file = "slides/data/dat_time_xts.Rdata")
+load("slides/data/dat_time_xts.Rdata")
+
+
+
+dat_time_xts %>% 
+  filter(platform == "YouTube") %>% 
+  chart_all() %>% 
+      hc_title(text = "Percentage of Classified Comments per Day - YouTube",
+             style = list(fontSize = "18px")) 
+
+
+dat_time_xts %>% 
+  filter(platform == "Twitter") %>% 
+  chart_all() %>% 
+      hc_title(text = "Percentage of Classified Comments per Day - Twitter",
+             style = list(fontSize = "18px")) 
+
+
+```
+
+
+
+#### Timeline 1112
+
+
+```{r}
+dat_time2 <- dat_time_xts %>%
+  filter(cdate > as.Date("2017-08-06") & cdate < as.Date("2017-08-30")) 
+
+
+
+
+# gg2 <- dat_time2 %>%
+#   filter(pred1 == 1) %>%
+#   ggplot(aes(cdate, perc)) +
+#   #geom_smooth(se=F) +
+#   geom_line(alpha = .5) +
+#   #scale_x_date() +
+#   facet_grid(page  ~ platform, scales="free") +
+#   ggthemes::theme_hc() +
+#   geom_vline(xintercept = as.Date("2017-08-11"), color = "red")
+#   #geom_vline(xintercept = as.Date("2017-01-20"), color = "red")
+# #ggsave(gg2, file = "gg_charl.png", width = 10)
+# gg2
+```
+
+
+
+# highcharter
+```{r}
+library(highcharter)
+# dat_time2 %>%
+#   # mutate(perc = round(100*perc, 2)) %>% 
+#   mutate(platform = case_when(
+#       platform == "fb" ~ "Facebook",
+#       platform == "tw" ~ "Twitter",
+#       platform == "yt" ~ "YouTube"
+#     )
+#   ) %>%
+#     mutate(page = forcats::fct_recode(page, 
+#                                     `CNN` = "cnn",
+#                                     `ABC` = "abc",
+#                                     `MSNBC` = "msnbc",
+#                                     `New York Times` = "nyt",
+#                                     `Washington Post` = "wapo",
+#                                     `Fox News` = "foxnews"
+#                                     )) %>% 
+#   filter(platform != "fb") %>%
+#   # filter(sent == 0) %>%
+#   filter(pred1 == 1) -> charlottesville_charter
+
+charlottesville_charter <- dat_time2
+
+save(charlottesville_charter, file = "slides/data/charlottesville_charter.Rdata")
+
+
+
+charlottesville_charter %>% 
+  filter(platform == "Twitter") %>% 
+  highcharter::hchart(., "line", hcaes(x = cdate, y = perc, group = page)) %>% 
+      hc_add_theme(hc_theme_google()) %>% 
+      hc_title(text = "Percentage of Classified Comments per Day - Twitter",
+             style = list(fontSize = "18px")) %>% 
+  hc_xAxis(title = list(text = "Days in x Axis"),
+           plotLines = list(
+             list(label = list(text = "Unite the Right Rally"),
+                  color = "gray70",
+                  width = 2,
+                  value = datetime_to_timestamp(as.Date("2017-08-11")))),
+            plotBands = list(
+                list(
+                  label = list(text = ""),
+                  color = "rgba(100, 0, 0, 0.1)",
+                  from = datetime_to_timestamp(as.Date("2017-08-11")),
+                  to = datetime_to_timestamp(as.Date("2017-08-12"))
+               )
+            ))
+
+
+charlottesville_charter %>% 
+  filter(platform == "YouTube") %>% 
+  highcharter::hchart(., "line", hcaes(x = cdate, y = perc, group = page)) %>% 
+      hc_add_theme(hc_theme_google()) %>% 
+      hc_title(text = "Percentage of Classified Comments per Day - YouTube",
+             style = list(fontSize = "18px")) %>% 
+  hc_xAxis(title = list(text = "Days in x Axis"),
+           plotLines = list(
+             list(label = list(text = "Unite the Right Rally"),
+                  color = "gray70",
+                  width = 2,
+                  value = datetime_to_timestamp(as.Date("2017-08-11")))),
+            plotBands = list(
+                list(
+                  label = list(text = ""),
+                  color = "rgba(100, 0, 0, 0.1)",
+                  from = datetime_to_timestamp(as.Date("2017-08-11")),
+                  to = datetime_to_timestamp(as.Date("2017-08-12"))
+               )
+            ))
+
+
+
+
+
+```
+
+# text
+
+
+```{r}
+cnn <- get(load("data/cnn.Rdata"))
+
+cnn %>% 
+  filter(cdate > as.Date("2017-08-08") & cdate < as.Date("2017-08-14")) %>% 
+  arrange(desc(pred1)) %>% 
+  filter(str_detect(text, "meme|\\(\\(\\("))
+
+
+
+
+
+cnn %>% 
+  filter(cdate > as.Date("2017-07-04") & cdate < as.Date("2017-07-06")) %>% 
+  arrange(desc(pred1)) %>% 
+  filter(!(str_detect(text, ".lack.ail")))
+```
+
+
+## user
+
+```{r}
+cnn <- get(load("data/cnn.Rdata"))
+
+dat_user <- cnn %>%
+  filter(!is.na(from)) %>%
+  group_by(platform, from, pred1) %>%
+  tally() %>%
+  filter(pred1 == 1) %>%
+  group_by(platform) %>%
+  arrange(desc(n)) %>%
+  top_n(n = 10) %>%
+  #count(predict) %>%
+  #mutate(perc = n/sum(n)) %>%
+  ungroup()
+
+gg_user <- dat_user %>%
+  mutate(from = forcats::fct_reorder2(from, platform, desc(n))) %>%
+  ggplot(aes(from, n)) +
+  geom_bar(stat = "identity") +
+  coord_flip() +
+  facet_wrap(~platform, scales = "free")
+
+ggsave(gg_user, file = "gg_user.png", width = 10)
+
+```
+
+
+# alt right
+
+```{r}
+
+# x <-  dir("data/altright")[1]
+load_data <- function(x) {
+  get(load(paste0("data/altright/", x)))
+}
+
+
+altright <- dir("data/altright") %>% 
+  as.list() %>% 
+  purrr::map(load_data) %>% 
+  purrr::reduce(bind_rows)
+
+
+
+
+
+
+
+```
+
+## allt time
+
+```{r}
+dat_time_whole_altright <- altright %>%
+  #sample_n(size = 10000) %>%
+  filter(platform != "fb") %>%
+  group_by(platform, page, cdate) %>%
+  #tally() %>%
+  count(pred1) %>%
+  mutate(perc = n/sum(n)) %>%
+  ungroup()
+
+
+dat_time_xts_altright <- dat_time_whole_altright %>%
+  mutate(perc = round(100*perc, 2)) %>% 
+  mutate(platform = case_when(
+      platform == "fb" ~ "Facebook",
+      platform == "tw" ~ "Twitter",
+      platform == "yt" ~ "YouTube"
+    )
+  ) %>%
+  mutate(page = forcats::fct_recode(page, 
+                                    `Milo Yiannopoulos` = "milo",
+                                    `Alex Jones/Infowars` = "alexjones",
+                                    `Mike Cernovich` = "cernovich",
+                                    `Paul Joseph Watson` = "pjw",
+                                    `Breitbart` = "breitbart",
+                                    `Steven Crowder` = "crowder",
+                                    `Rebel Media` = "TheRebelTV",
+                                    `Blaire White` = "blaire_white",
+                                    `Tommy Robinson` = "robinson",
+                                    `Stefan Molyneux/Freedomain Radio` = "molymeme",
+                                    `Red Ice TV` = "redicetv",
+                                    `Black Pigeon Speaks` = "bps",
+                                    `Styxhexenhammer` = "styxenhammer",
+                                    `Lauren Southern` = "lauren",
+                                    `Baked Alaska` = "bakedalaska",
+                                    `Return of Kings` = "returnofkings",
+                                    `VDARE` = "vdare",
+                                    `Roosh V` = "roosh",
+                                    `RamZPaul` = "ramzpaul",
+                                    `Brittany Pettibone` = "pettibone",
+                                    `Arktos Media` = "arktosmedia",
+                                    `Gavin McInnes` = "gavin",
+                                    `The National Policy Institute/Radix Journal` = "NPIRadix",
+                                    `Millenial Woes` = "mw",
+                                    `Roaming Millenial` = "roaming",
+                                    `Richard Spencer` = "richardspencer",
+                                    `Identity Evropa` = "europa",
+                                    `Paul Elam` = "paulelam",
+                                    `AltRight.com` = "altright",
+                                    `Tara McCarthy` = "tara",
+                                    `Counter-Currents` = "countercurr",
+                                    `Ann Coulter` = "anncoulter",
+                                    `American Renaissance` = "americanrenaissance"
+                                    ))  %>% 
+  filter(platform != "fb") %>%
+  # filter(sent == 0) %>%
+  filter(pred1 == 1) %>%
+  na.omit() 
+
+save(dat_time_xts_altright, file = "slides/data/dat_time_xts_altright.Rdata")
+load("slides/data/dat_time_xts_altright.Rdata")
+
+
+dat_time_xts_altright %>% 
+  filter(platform == "Twitter") %>% 
+  highcharter::hchart(., "line", hcaes(x = cdate, y = perc, group = page)) %>% 
+      hc_add_theme(hc_theme_google()) %>% 
+      hc_title(text = "Percentage of Classified Comments per Day - Twitter",
+             style = list(fontSize = "18px")) %>% 
+  hc_xAxis(title = list(text = "Days in x Axis")) %>% 
+  hc_yAxis(title = list(text = "Percent")) %>% 
+  hc_tooltip(shared = T)
+
+dat_time2 <- dat_time_xts_altright %>%
+  filter(cdate > as.Date("2017-08-06") & cdate < as.Date("2017-08-30")) 
+
+
+dat_time2 %>% 
+  filter(platform == "Twitter") %>% 
+  highcharter::hchart(., "line", hcaes(x = cdate, y = perc, group = page)) %>% 
+      hc_add_theme(hc_theme_google()) %>% 
+      hc_title(text = "Percentage of Classified Comments per Day - Twitter",
+             style = list(fontSize = "18px")) %>% 
+  hc_xAxis(title = list(text = "Days in x Axis"),
+           plotLines = list(
+             list(label = list(text = "Unite the Right Rally"),
+                  color = "gray70",
+                  width = 2,
+                  value = datetime_to_timestamp(as.Date("2017-08-11")))),
+            plotBands = list(
+                list(
+                  label = list(text = ""),
+                  color = "rgba(100, 0, 0, 0.1)",
+                  from = datetime_to_timestamp(as.Date("2017-08-11")),
+                  to = datetime_to_timestamp(as.Date("2017-08-12"))
+               )
+            )) %>% 
+  hc_yAxis(title = list(text = "Percent")) %>% 
+  hc_tooltip(shared = T)
+```
+

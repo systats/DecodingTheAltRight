@@ -1,0 +1,293 @@
+---
+title: "Decoding the Alt-Right"
+subtitle: "A Machine Learning Project"
+author: "Simon & Fabio"
+date: "2018/05/10"
+output:
+  xaringan::moon_reader:
+    lib_dir: libs
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+---
+
+
+```{r setup, echo = F, include=F}
+# include=FALSE
+options(htmltools.dir.version = FALSE)
+
+pacman::p_load(dplyr, ggplot2, googlesheets, openxlsx, stringr, rvest, dplyr, ggplot2, keras, mlrMBO, tidyMBO, ggthemes, Smisc, randomForest, parallelMap, emoa)
+
+knitr::opts_chunk$set(echo = F, warning = F, error = F, message = F)
+```
+
+## Outline
+
+TODO:
+
+* Repo Setup
+* Homepage
+* Intearctive plots
+* QR Code/Bitly
+* Hero Banner: Banner + Übergang in Charlottsville torches march/metalic
+* DecodingTheAltRight.eu
+
+
+1. Theoretical Setting
+    * What is the alt-right?
+2. Data Collection
+    * Where are they?
+    * Who did we scrape?
+    * wheach media outlets? logo
+    * descriptives
+    * Timerange
+3. Coding Framework
+    * Coding Scheme
+    * App
+    * Voluntary Coders (tree)
+    * Reliability and Validation
+    * Descripives of labeled data
+4. Machine Learning
+    * Train/Test Split
+    * RNN/LSTM/MLP language models 
+    * `tidyMBO`
+    * t-SNE word embedding
+    * Performance tables
+5. Predictive Analysis
+    * Terror
+    * Hoax: Narrative. Coparative Narratives. Frist occurance. Charelltsvill Quebec Mosque shooter. 
+    * Media over time
+    * ALt-Right figures over time. 
+6. Policy Implications
+    * Counter Narratives
+    * AI deletion: What about uncertainty and ambiguity of language.
+    * Human in the loop. 
+    * Feeback loop: get personal feedback. Restcricted times.
+    * Algorithemn must be repsonsive and transparent on how decisions are made. Highlight problematic content and a reason why. 
+    * Cross Checking Algorithemns improve the comprehension of how the system works and we get a chance to critize its blindspots. 
+    * More accountable AI programming. 
+
+---
+class: inverse, center, middle
+
+## Get Started
+
+
+---
+
+## Fallbacks
+
+* Keyword counting
+* Official racesim dictionaries.
+* Network analysis.
+    + Link share network
+    + user community
+* Gender
+* Terror
+* Story tracing/hoax
+  
+
+---
+
+## VENN
+
+![](images/circle_venn/Folie1.png)
+
+
+---
+
+## VENN
+
+![](images/circle_venn/Folie2.png)
+
+---
+
+## VENN
+
+![](images/circle_venn/Folie3.png)
+
+---
+
+## Who did we scrape?
+
+```{r data, echo = F, eval = F}
+googlesheets::gs_auth(token = "shiny_app_token.rds")
+with_label <- gs_title("altright_data_final") %>%
+  gs_read()
+
+clean_slider <- function(x){
+  x %>%
+    str_replace_all("Not Present", "1") %>%
+    str_replace_all("Strongly Present", "5") %>%
+    str_replace_all("99", "0")
+}
+
+df_coded <- with_label %>%
+  filter(!duplicated(text)) %>%
+  arrange(id) %>%
+  purrr::map_df(clean_slider) %>%
+  mutate_at(vars(identity:anti_mus), as.numeric)
+
+dt <- df_coded %>%
+  #dplyr::select(identity:left, anti_fem:anti_mus) %>%
+  #purrr::map_df(.f = ~ifelse(.x == 1, 1, 2)) %>%
+  #cbind(., text = df_coded$text) %>%
+  mutate(text = as.character(text))
+
+#save(dt, file = "data/dt.Rdata")
+```
+
+
+
+
+```{r tally, echo = F, fig.width = 10, fig.height=7, fig.align="center"}
+load("data/dt.Rdata")
+dt %>%
+  mutate(pl1 = as.numeric(as.factor(platform))) %>%
+  group_by(platform, pl1, page) %>%
+  tally %>%
+  ungroup %>%
+  mutate(page = forcats::fct_reorder(page, pl1)) %>%
+  filter(!is.na(page)) %>%
+  arrange(platform, desc(n)) %>%
+  ggplot(aes(page, platform, fill = n)) +
+  geom_tile() +
+  coord_flip() +
+  theme_hc() +
+  theme(legend.position = "right", text = element_text(size = 20, face = "bold")) +
+  viridis::scale_fill_viridis("Number", option = "E", alpha = .5, direction = -1) +
+  labs(x = "", y = "") +
+  scale_y_discrete(position = "top")
+```
+
+
+
+
+
+---
+
+## Wordcloud
+
+```{r}
+library(ggplot2)
+library(ggrepel)
+
+
+discard_tokens <- function (data, text, dict, purrr = T) 
+{
+  if (purrr) {
+    string <- data %>% 
+      mutate(id = 1:n()) %>%
+      tidytext::unnest_tokens_("word", text, to_lower = T) %>% 
+      dplyr::anti_join(dict, by = "word") %>%
+      split(.$id) %>% 
+      purrr::map_chr(.f = ~paste(.x$word, collapse = " "))
+    
+    data %>% dplyr::mutate(text = string)
+  }
+  else {
+    data %>% tidytext::unnest_tokens(words, text) %>% dplyr::anti_join(st_de) %>% 
+      dplyr::group_by(id) %>% dplyr::summarise(ctext = paste(words, 
+      collapse = " ")) %>% dplyr::right_join(data)
+  }
+}
+
+
+
+pre_filter <- dt %>% 
+  mutate(top = ifelse(race > 1, viridis::viridis_pal(option = "D", direction = -1)(3)[1], "Not")) %>%
+  mutate(top = ifelse(anti_sem > 1, viridis::viridis_pal(option = "D", direction = -1)(3)[2], top)) %>%
+  filter(top != "Not") #%>%
+  #dplyr::select(text)
+
+uni_grams <- pre_filter %>%
+  tidytext::unnest_tokens(word, text) %>%
+  dplyr::anti_join(tidyTX::stop_words_en, by = "word") %>% 
+  count(word) %>%
+  arrange(desc(n)) %>%
+  slice(1:50)
+
+custom_words <- tibble(word = c("and", "he", "she", "in", "the", "they", "are", "to", "a", "in", "is", "so"))
+
+bi_grams <- pre_filter %>%
+  discard_tokens(text = "text", dict = custom_words) %>%
+  discard_tokens(text = "text", dict = tidyTX::stop_words_en) %>%
+  tidytext::unnest_tokens(word, text, token = "ngrams", n = 2) %>%
+  rename(color = top) %>%
+  #dplyr::anti_join(tidyTX::stop_words_en, by = "word") %>% 
+  group_by(color) %>%
+  count(word) %>%
+  arrange(desc(n)) %>%
+  group_by(color) %>%
+  slice(1:25) %>%
+  ungroup() %>%
+  rename(freq = n) %>%
+  bind_rows(tibble(color= "#8B0000", word = "Alt-Right", freq = 8), .)
+
+wordcloud2::wordcloud2(bi_grams[,c("word", "freq")], color = bi_grams$color)
+
+
+dir()
+figPath <- system.file("alt_right_logo.png", package = "wordcloud2")
+wordcloud2::wordcloud2(
+  bi_grams[,c("word", "freq")], 
+  color = bi_grams$color,
+  backgroundColor = "#2B2B2B", fontFamily = "impact"
+  #figPath = "alt_right_logo.png"
+)
+```
+
+```{r, eval = F}
+# install.packages("wordcloud") # word-cloud generator 
+library(wordcloud)
+wordcloud(words = bi_grams$word, freq = bi_grams$n, min.freq = 1,
+          max.words=200, random.order=FALSE, rot.per=0.35, 
+          colors=bi_grams$color)#viridis::viridis_pal()(8)
+```
+
+
+
+```{r, eval =F}
+glimpse(dt)
+
+dt_prep <-  dt %>%
+    dplyr::select(identity:left, anti_fem:anti_mus) %>%
+    purrr::map_df(.f = ~ifelse(.x == 1, 1, 2)) %>%
+    mutate(id = 1:n())
+
+text_graphic <- function(input){
+  tibble(place_holder = dt_prep[[input]]) %>%
+    #rename_("place_holder" = input) %>%
+    mutate(type_name = paste0(input)) %>%
+    mutate(type = ifelse(place_holder == 2, "1", "0")) %>%
+    select(-place_holder) %>%
+    tidyr::gather("var", "value", -id, -type, -type_name)
+}
+
+nn <- dt %>%
+  dplyr::select(identity:left, anti_fem:anti_mus) %>%
+  colnames %>%
+  # as.list() %>%
+  purrr::map(~text_graphic(.x))
+
+nn[[1]]
+
+gg1 <- nn %>%
+  purrr::reduce(bind_rows) %>%
+  filter(value == 2) %>%
+  ggplot(aes(var, value, group = id, colour = type, alpha = value)) +
+  geom_jitter() +
+  scale_alpha_continuous(range =  c(.5, .01)) +
+  scale_colour_manual(values = c("red", "gray")) +
+  facet_grid(type_name~.) +
+  theme_classic() +
+  theme(legend.position = "none") +
+  labs(x = "", y = "")
+
+#ggsave(gg1, filename = "gg1.png")
+```
+
+
+
+
