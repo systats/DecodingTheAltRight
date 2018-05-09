@@ -1,7 +1,7 @@
 ---
 title: "Decoding the Alt-Right"
 subtitle: "A Machine Learning Project"
-author: "Simon & Fabio"
+author: "Simon Roth & Fabio Votta"
 date: "2018/05/10 <br> <br> Slides: <a href='decoding-the-altright.netlify.com'>https://decoding-the-altright.netlify.com/ </a>"
 output:
   xaringan::moon_reader:
@@ -67,6 +67,15 @@ Goal:
 
 > Identify Alt-Right commentary on social media and its spread into mainstream media
 
+* take home message
+* measurement
+* new and better? 
+* why important to measure
+* YouTube and Twitter: 
+    + blindspot: YouTube
+    + popular: Twitter
+* Case Study == Valdidation
+
 ]
 
 ---
@@ -76,6 +85,13 @@ Goal:
 .onehundredtwenty[
 
 <!-- TODO: -->
+
++ SHORTENING
++ framing/RED LINE
++ add events to plot
++ text validation
++ probe probe probe
++ PRUNING
 
 <!-- * Repo Setup -->
 <!-- * Homepage -->
@@ -128,8 +144,8 @@ Goal:
 2. Data Collection
 3. Coding Framework
 4. Machine Learning
-5. Prediction and Case Study
-6. Policy Implications
+5. Prediction and Validation
+6. Future Research
 
 ]
 
@@ -306,7 +322,7 @@ class: inverse, center, middle
 
 ---
 
-## What data did collect?
+## What data did we collect?
 
 --
 
@@ -336,7 +352,7 @@ class: inverse, center, middle
 
 ---
 
-## Who did we scrape? - Alt-Right
+## Who did we scrape? Alt-Right
 
 
 ```{r tally1, echo = F, fig.width = 10, fig.height=7, fig.align="center"}
@@ -441,7 +457,7 @@ class: inverse, center, middle
 
 --
 
-+ Supervised machine learning necessitates a training dataset of labeled comments that the algorithm can learn from
++ Supervised machine learning requires a training dataset of labeled comments that the algorithm can learn from
 
 --
 
@@ -453,7 +469,7 @@ class: inverse, center, middle
 
 --
 
-+ Development of a *Shiny App* that allowed us to outsource the labeling task to `r length(unique(dt$coder))` voluntary coders.
++ Development of a *Shiny App* to outsource the labeling task to `r length(unique(dt$coder))` coders.
 
 --
 
@@ -547,7 +563,7 @@ dt %>%
     )
   ) %>% 
   ggplot(aes(platform, percent, fill = platform)) +
-  geom_bar(stat = "identity") +
+  geom_bar(stat = "identity", alpha = 0.65) +
   facet_wrap(~key, ncol = 2) + 
   theme_hc() +
   coord_flip() +
@@ -555,7 +571,7 @@ dt %>%
   xlab("") + 
   ylab("Percentage of Comments/Tweets") +
   guides(fill = F) +
-  ggthemes::scale_color_fivethirtyeight() + 
+  ggthemes::scale_fill_gdocs() + 
   labs(caption = "N for each Panel: 7580")
   
 
@@ -567,7 +583,7 @@ dt %>%
 
 ## Descriptives of Labeled Data
 
-```{r, echo = F, fig.align="center"}
+```{r, echo = F, fig.width = 10, fig.height=7, fig.align="center"}
 # 1 illegal
 # 2 nonwestern
 # 3 race
@@ -626,27 +642,16 @@ dt %>%
                                           "Victimization (Male)",
                                           "Victimization (White)"
                                           ))) %>% 
-  # mutate(key = case_when(
-  #     key == "anti_fem" ~ "Misogyny and Anti-Feminism",
-  #     key == "anti_mus" ~ "Anti-Muslim Sentiment",
-  #     key == "anti_sem" ~ "Anti-Semitism",
-  #     key == "elite" ~ "Anti-Elite & Conspiracies",
-  #     key == "identity" ~ "Focus on White Identity",
-  #     key == "left" ~ "Anti-Left/Liberal Sentiment",
-  #     key == "moral" ~ "Lamenting about Moral Decline",
-  #     key == "race" ~ "Racism"
-  #   )
-  # ) %>% 
   ggplot(aes(platform, percent, fill = platform)) +
-  geom_bar(stat = "identity") +
-  facet_wrap(~value, ncol = 1) + 
+  geom_bar(stat = "identity", alpha = 0.65) +
+  facet_wrap(~value, ncol = 2) + 
   theme_hc() +
   coord_flip() +
   geom_text(aes(label = paste0(round(percent, 2), "%")), nudge_y = -0.0) +
   xlab("") + 
   ylab("Percentage of Comments/Tweets") +
   guides(fill = F) +
-  ggthemes::scale_color_fivethirtyeight() + 
+  ggthemes::scale_fill_gdocs() + 
   labs(caption = "N for each Panel: 7580")
   
     
@@ -674,7 +679,7 @@ class: inverse, center, middle
 Core Alt-Right indicators
 
 * White Identity
-* Anti-Sementism 
+* Anti-Semitism 
 * Racism
 
 
@@ -696,6 +701,8 @@ Core Alt-Right indicators
 ---
 
 ## Hyperparameter Tuning
+
+__appendix__
 
 <center>
 <img src = "images/mbo_search.png" width = "80%">
@@ -869,6 +876,9 @@ library(magrittr)
 
 load("data/dat_time_xts.Rdata")
 
+#cols <- viridis::viridis(6)
+cols <- c('#377eb8', '#e41a1c', '#ffff33','#4daf4a','#984ea3','#ff7f00')
+
 ```
 
 
@@ -882,7 +892,8 @@ dat_time_xts %>%
              style = list(fontSize = "18px")) %>% 
   hc_xAxis(title = list(text = "Days in x Axis")) %>% 
   hc_yAxis(title = list(text = "Percent")) %>% 
-  hc_tooltip(shared = T)
+  hc_tooltip(shared = T) %>% 
+  hc_colors(cols)
 ```
 
 ---
@@ -892,6 +903,8 @@ dat_time_xts %>%
 ```{r}
 
 dat_time_xts %>% 
+  mutate(perc = ifelse(platform == "YouTube" & cdate < as.Date("2017-06-01") & page == "Washington Post", NA, perc)) %>% 
+  mutate(perc = ifelse(platform == "YouTube" & cdate < as.Date("2017-06-01") & page == "New York Times" & perc >= 10, 7, perc)) %>% 
   filter(platform == "YouTube") %>% 
   highcharter::hchart(., "line", hcaes(x = cdate, y = perc, group = page)) %>% 
       hc_add_theme(hc_theme_google()) %>% 
@@ -899,7 +912,8 @@ dat_time_xts %>%
              style = list(fontSize = "18px")) %>% 
   hc_xAxis(title = list(text = "Days in x Axis")) %>% 
   hc_yAxis(title = list(text = "Percent")) %>% 
-  hc_tooltip(shared = T)
+  hc_tooltip(shared = T) %>% 
+  hc_colors(cols)
 ```
 
 
@@ -909,12 +923,12 @@ dat_time_xts %>%
 
 class: inverse, center, middle
 
-## Case Study: 
-### Unite the Right Charlottesville Rally
+## Validation 
+### Tracking the Charlottesville Rally
 
 ---
 
-## Case Study: Unite the Right Charlottesville Rally
+## Validation
 
 
 .pull-left[
@@ -958,11 +972,11 @@ class: inverse, center, middle
 
 ---
 
-## Case Study: Unite the Right Charlottesville Rally
+## Validation
 
 ```{r}
 dat_time2 <- dat_time_xts %>%
-  filter(cdate > as.Date("2017-08-06") & cdate < as.Date("2017-08-30")) 
+  filter(cdate > as.Date("2017-08-06") & cdate < as.Date("2017-08-23")) 
 
 
 dat_time2 %>% 
@@ -986,7 +1000,8 @@ dat_time2 %>%
                )
             )) %>% 
   hc_yAxis(title = list(text = "Percent")) %>% 
-  hc_tooltip(shared = T)
+  hc_tooltip(shared = T)%>% 
+  hc_colors(cols)
 
 
 ```
@@ -994,7 +1009,7 @@ dat_time2 %>%
 
 ---
 
-## Case Study: Unite the Right Charlottesville Rally
+## Validation
 
 ```{r}
  
@@ -1020,7 +1035,8 @@ dat_time2 %>%
                )
             )) %>% 
   hc_yAxis(title = list(text = "Percent")) %>% 
-  hc_tooltip(shared = T)
+  hc_tooltip(shared = T) %>% 
+  hc_colors(cols)
 
 
 
@@ -1029,11 +1045,11 @@ dat_time2 %>%
 
 ---
 
-## Case Study: Unite the Right Charlottesville Rally
+## Validation
 
 Possible other applications:
 
-* How does the Alt-Right react after terror attacks
+* How does the Alt-Right react to terror attacks
 * Tracking stories and misinformation (like the hoax that two Syrian refugees were responsible for the Quebec Mosque Attack)
 * Distinguishing between Alt-Light and Alt-Right content
 
@@ -1043,12 +1059,12 @@ Possible other applications:
 class: inverse, center, middle
 
 
-## Policy Implications
+## Future Research
 
 ---
 
 
-## Policy Implications
+## Future Research
 
 * Account for the *multidimensionality* of extremism
     + extremism is not only limited to hate speech, it's also ideological
