@@ -86,6 +86,13 @@ Goal:
 
 <!-- TODO: -->
 
++ SHORTENING
++ framing/RED LINE
++ add events to plot
++ text validation
++ probe probe probe
++ PRUNING
+
 <!-- * Repo Setup -->
 <!-- * Homepage -->
 <!-- * Intearctive plots -->
@@ -137,8 +144,8 @@ Goal:
 2. Data Collection
 3. Coding Framework
 4. Machine Learning
-5. Prediction and Case Study
-6. Policy Implications
+5. Prediction and Validation
+6. Future Research
 
 ]
 
@@ -556,7 +563,7 @@ dt %>%
     )
   ) %>% 
   ggplot(aes(platform, percent, fill = platform)) +
-  geom_bar(stat = "identity") +
+  geom_bar(stat = "identity", alpha = 0.65) +
   facet_wrap(~key, ncol = 2) + 
   theme_hc() +
   coord_flip() +
@@ -564,7 +571,7 @@ dt %>%
   xlab("") + 
   ylab("Percentage of Comments/Tweets") +
   guides(fill = F) +
-  ggthemes::scale_color_fivethirtyeight() + 
+  ggthemes::scale_fill_gdocs() + 
   labs(caption = "N for each Panel: 7580")
   
 
@@ -576,7 +583,7 @@ dt %>%
 
 ## Descriptives of Labeled Data
 
-```{r, echo = F, fig.align="center"}
+```{r, echo = F, fig.width = 10, fig.height=7, fig.align="center"}
 # 1 illegal
 # 2 nonwestern
 # 3 race
@@ -635,27 +642,16 @@ dt %>%
                                           "Victimization (Male)",
                                           "Victimization (White)"
                                           ))) %>% 
-  # mutate(key = case_when(
-  #     key == "anti_fem" ~ "Misogyny and Anti-Feminism",
-  #     key == "anti_mus" ~ "Anti-Muslim Sentiment",
-  #     key == "anti_sem" ~ "Anti-Semitism",
-  #     key == "elite" ~ "Anti-Elite & Conspiracies",
-  #     key == "identity" ~ "Focus on White Identity",
-  #     key == "left" ~ "Anti-Left/Liberal Sentiment",
-  #     key == "moral" ~ "Lamenting about Moral Decline",
-  #     key == "race" ~ "Racism"
-  #   )
-  # ) %>% 
   ggplot(aes(platform, percent, fill = platform)) +
-  geom_bar(stat = "identity") +
-  facet_wrap(~value, ncol = 1) + 
+  geom_bar(stat = "identity", alpha = 0.65) +
+  facet_wrap(~value, ncol = 2) + 
   theme_hc() +
   coord_flip() +
   geom_text(aes(label = paste0(round(percent, 2), "%")), nudge_y = -0.0) +
   xlab("") + 
   ylab("Percentage of Comments/Tweets") +
   guides(fill = F) +
-  ggthemes::scale_color_fivethirtyeight() + 
+  ggthemes::scale_fill_gdocs() + 
   labs(caption = "N for each Panel: 7580")
   
     
@@ -907,15 +903,9 @@ dat_time_xts %>%
 ```{r}
 
 dat_time_xts %>% 
+  mutate(perc = ifelse(platform == "YouTube" & cdate < as.Date("2017-06-01") & page == "Washington Post", NA, perc)) %>% 
+  mutate(perc = ifelse(platform == "YouTube" & cdate < as.Date("2017-06-01") & page == "New York Times" & perc >= 10, 7, perc)) %>% 
   filter(platform == "YouTube") %>% 
-  # mutate(perc = ifelse(page == "New York Times" & cdate == as.Date("2017-01-04"), 2, perc)) %>% 
-  # mutate(perc = ifelse(page == "New York Times" & cdate == as.Date("2017-01-17"), 2, perc)) %>% 
-  # mutate(perc = ifelse(page == "Washington Post" & cdate == as.Date("2017-03-02"), 2, perc)) %>% 
-  # mutate(perc = ifelse(page == "Washington Post" & cdate == as.Date("2017-04-07"), 2, perc)) %>% 
-  # mutate(perc = ifelse(page == "Washington Post" & cdate == as.Date("2017-04-08"), 2, perc)) %>% 
-  
-mutate(perc = ifelse(page == "Washington Post" & cdate < as.Date("2017-06-01"), NA, perc)) %>%   
-mutate(perc = ifelse(page == "New York Times" & cdate < as.Date("2017-06-01") & perc > 10, 7, perc)) %>% 
   highcharter::hchart(., "line", hcaes(x = cdate, y = perc, group = page)) %>% 
       hc_add_theme(hc_theme_google()) %>% 
       hc_title(text = "Percentage of Classified Comments per Day - YouTube",
@@ -933,12 +923,12 @@ mutate(perc = ifelse(page == "New York Times" & cdate < as.Date("2017-06-01") & 
 
 class: inverse, center, middle
 
-## Case Study: 
-### Unite the Right Charlottesville Rally
+## Validation 
+### Tracking the Charlottesville Rally
 
 ---
 
-## Case Study: Unite the Right Charlottesville Rally
+## Validation
 
 
 .pull-left[
@@ -982,7 +972,7 @@ class: inverse, center, middle
 
 ---
 
-## Case Study: Unite the Right Charlottesville Rally
+## Validation
 
 ```{r}
 dat_time2 <- dat_time_xts %>%
@@ -1019,7 +1009,7 @@ dat_time2 %>%
 
 ---
 
-## Case Study: Unite the Right Charlottesville Rally
+## Validation
 
 ```{r}
  
@@ -1055,11 +1045,11 @@ dat_time2 %>%
 
 ---
 
-## Case Study: Unite the Right Charlottesville Rally
+## Validation
 
 Possible other applications:
 
-* How does the Alt-Right react after terror attacks
+* How does the Alt-Right react to terror attacks
 * Tracking stories and misinformation (like the hoax that two Syrian refugees were responsible for the Quebec Mosque Attack)
 * Distinguishing between Alt-Light and Alt-Right content
 
@@ -1069,12 +1059,12 @@ Possible other applications:
 class: inverse, center, middle
 
 
-## Policy Implications
+## Future Research
 
 ---
 
 
-## Policy Implications
+## Future Research
 
 * Account for the *multidimensionality* of extremism
     + extremism is not only limited to hate speech, it's also ideological
