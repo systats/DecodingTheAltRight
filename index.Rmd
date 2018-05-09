@@ -86,10 +86,7 @@ Goal:
 
 <!-- TODO: -->
 
-+ SHORTENING
 + framing/RED LINE
-+ add events to plot
-+ text validation
 + probe probe probe
 + PRUNING
 
@@ -144,8 +141,8 @@ Goal:
 2. Data Collection
 3. Coding Framework
 4. Machine Learning
-5. Prediction and Validation
-6. Future Research
+5. Validation
+6. Conclusions
 
 ]
 
@@ -242,7 +239,7 @@ A group of loosely aligned individuals and subgroups that predominatly consist o
 ---
 
 
-## Groups of the Alt-Right I
+## What is the Alt-Right?
 
 The Alt-Right consists of...
 
@@ -253,37 +250,37 @@ The Alt-Right consists of...
 ---
 
 
-## Groups of the Alt-Right II
+## What is the Alt-Right?
 
 <img src="images/flower1.png">
 
 ---
-## Groups of the Alt-Right II
+## What is the Alt-Right?
 
 <img src="images/flower2.png">
 
 ---
-## Groups of the Alt-Right II
+## What is the Alt-Right?
 
 <img src="images/flower3.png">
 
 ---
-## Groups of the Alt-Right II
+## What is the Alt-Right?
 
 <img src="images/flower4.png">
 
 ---
-## Groups of the Alt-Right II
+## What is the Alt-Right?
 
 <img src="images/flower5.png">
 
 ---
-## Groups of the Alt-Right II
+## What is the Alt-Right?
 
 <img src="images/flower6.png">
 
 ---
-## Groups of the Alt-Right II
+## What is the Alt-Right?
 
 <img src="images/flower7.png">
 
@@ -332,11 +329,11 @@ class: inverse, center, middle
 
 --
 
-+ Comments from 76 Alt-Right connected profiles/YouTube channels 
++ Comments from 36 Alt-Right connected profiles/YouTube channels 
 
 --
 
-+ Comments from 7 Media Outles (CNN, MSNBC, ABC, Fox News, Washington Post, New York Times)
++ Comments from 6 Media Outles (CNN, MSNBC, ABC, Fox News, Washington Post, New York Times)
 
 <img src="images/media.png">
 
@@ -683,7 +680,7 @@ Core Alt-Right indicators
 * Racism
 
 
-**Best Model**
+**Best Models**
 
 * Most promising *Decision Trees*
 * Variant: *Gradient Boosted Machines*
@@ -696,17 +693,6 @@ Core Alt-Right indicators
 <img src = "images/new_gbm.png" align="bottom">
 
 ]
-
-
----
-
-## Hyperparameter Tuning
-
-__appendix__
-
-<center>
-<img src = "images/mbo_search.png" width = "80%">
-</center>
 
 ---
 
@@ -864,7 +850,7 @@ confusion_real(gbm_confusion$perform, gbm_confusion$data$test$altright1, lib = "
 
 class: inverse, center, middle
 
-## Predictions
+## Validation
 
 ---
 
@@ -890,10 +876,15 @@ dat_time_xts %>%
       hc_add_theme(hc_theme_google()) %>% 
       hc_title(text = "Percentage of Classified Comments per Day - Twitter",
              style = list(fontSize = "18px")) %>% 
-  hc_xAxis(title = list(text = "Days in x Axis")) %>% 
   hc_yAxis(title = list(text = "Percent")) %>% 
   hc_tooltip(shared = T) %>% 
-  hc_colors(cols)
+  hc_colors(cols) #%>% 
+  # hc_xAxis(title = list(text = "Days in x Axis"),
+  #          plotBands = list(
+  #            list(label = list(text = "Charlottesville"),
+  #                 color = "black",
+  #                 width = 3,
+  #                 value = datetime_to_timestamp(as.Date("2017-08-11"))))) 
 ```
 
 ---
@@ -916,29 +907,32 @@ dat_time_xts %>%
   hc_colors(cols)
 ```
 
+---
+
+## Example I : *"Operation Autism Storm"* / CNN Meme War
+
+.pull-left[
+
++ On **July 5th, 2017**, an anonymous 4chan user called for a *meme war* with CNN by spreading anti-CNN comments, boycotting the news network’s advertisers and discrediting their journalists. 
+
+<img src="images/cnnmeme.jpg" height="260"  align="middle">
 
 
+]
+
+.pull-right[
+
+<img src="images/memewar.jpg" height="460" width="80%" align="middle">
+
+]
 
 ---
 
-class: inverse, center, middle
-
-## Validation 
-### Tracking the Charlottesville Rally
-
----
-
-## Validation
+## Example II: Unite the Right Rally in Charlottesville
 
 
 .pull-left[
 
-
-* Unite the Right Rallye in Charlottesville
-
-
-
-<td style="padding-top: 1.5px;"></td>
 
 * Protests officially against removing a Statue of Robet E. Lee
 
@@ -972,7 +966,7 @@ class: inverse, center, middle
 
 ---
 
-## Validation
+## Example II: Unite the Right Rally in Charlottesville
 
 ```{r}
 dat_time2 <- dat_time_xts %>%
@@ -1009,7 +1003,7 @@ dat_time2 %>%
 
 ---
 
-## Validation
+## Example II: Unite the Right Rally in Charlottesville
 
 ```{r}
  
@@ -1045,12 +1039,46 @@ dat_time2 %>%
 
 ---
 
-## Validation
+## Example II: Unite the Right Rally in Charlottesville
 
-Possible other applications:
+*Some comments that the algorithm identified:*
+
+> "Antifa should be declared terrorist organization, because they are funded by fcking jews, and doing crimes all over US."
+
+--
+
+> "you dont go out and counter protest peoples rights, they were wrong, we dont go to nigger rallies and bother them!"  
+
+--
+
+> "Lol counter protesters that's what you get. Let the white people have there pride. I use the 2nd amendment so If they try something I'm strapped just leave them alone. There culture is being torn apart such as taking down the confederate monuments and stoping white pride events. Black people can parade  streets and have black pride. But not white people? The tables have turned. Honestly I really dislike niggers I wish we would have never brought them from Africa."
+
+--
+
+> "Fuck (((CNN))) and their jewish lies"
+
+--
+
+> "Blame the mayor who planned this garbage;  Black Pride; Asian Pride; Gay Pride... WHITE PRIDE either we ALL HAVE PRIDE or NO ONE CAN"
+
+
+
+
+
+---
+
+## Future Research
+
+*Possible other applications:*
 
 * How does the Alt-Right react to terror attacks
+
+-- 
 * Tracking stories and misinformation (like the hoax that two Syrian refugees were responsible for the Quebec Mosque Attack)
+
+--
+
+
 * Distinguishing between Alt-Light and Alt-Right content
 
 ---
@@ -1059,12 +1087,12 @@ Possible other applications:
 class: inverse, center, middle
 
 
-## Future Research
+## Conclusions
 
 ---
 
 
-## Future Research
+## Conclusions
 
 * Account for the *multidimensionality* of extremism
     + extremism is not only limited to hate speech, it's also ideological
@@ -1107,6 +1135,20 @@ Hawley, G. (2017). Making Sense of the Alt-right. Columbia University Press.
 Marwick, A., & Lewis, R. (2017). Media manipulation and disinformation online. New York: Data & Society Research Institute.
 
 
+
+---
+
+class: inverse, center, middle
+
+## Appenidx
+
+---
+
+## Hyperparameter Tuning
+
+<center>
+<img src = "images/mbo_search.png" width = "80%">
+</center>
 
 ---
 
