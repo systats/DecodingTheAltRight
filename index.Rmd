@@ -137,7 +137,7 @@ class: center, middle
 ## What is the Alt-Right?
 
 
-A group of loosely aligned individuals and subgroups that predominatly consist of white, young & male frequent internet user. Although adherence to these beliefs varies, these are some common themes within the Alt-Right:
+A group of loosely aligned individuals and subgroups that predominately consist of white, young & male frequent internet user. Although adherence to these beliefs varies, these are some common themes within the Alt-Right:
 
 --
 
@@ -157,25 +157,25 @@ A group of loosely aligned individuals and subgroups that predominatly consist o
 
 --
 
-+ Belief in biological differences inbetween races and genders that justifies seperate treatment
++ Belief in biological differences in between races and genders that justifies separate treatment
 
 --
 
-+ Ambigious and troll-like behaviour as to ensure *plausible deniability*
++ Ambiguous and troll-like behavior as to ensure *plausible deniability*
 
 
 ---
 
 
-## What is the Alt-Right?
+<!-- ## What is the Alt-Right? -->
 
-The Alt-Right consists of...
+<!-- The Alt-Right consists of... -->
 
---
+<!-- -- -->
 
-> an amalgam of conspiracy theorists, techno-libertarians, white nationalists, Men’s Rights advocates, trolls, anti-feminists, anti-immigration activists, and bored young people [...]. [S]ome participants in this ecosystem are organized by their beliefs (like *"Men’s Rights Activists"*), while others are organized by particular media or platforms (such as individual blogs and podcasts). Thus, the lines between these groups are always blurry and uneven (Marwick and Lewis 2017). 
+<!-- > an amalgam of conspiracy theorists, techno-libertarians, white nationalists, Men’s Rights advocates, trolls, anti-feminists, anti-immigration activists, and bored young people [...]. [S]ome participants in this ecosystem are organized by their beliefs (like *"Men’s Rights Activists"*), while others are organized by particular media or platforms (such as individual blogs and podcasts). Thus, the lines between these groups are always blurry and uneven (Marwick and Lewis 2017).  -->
 
----
+<!-- --- -->
 
 
 ## What is the Alt-Right?
@@ -238,7 +238,7 @@ class: inverse, center, middle
 
 --
 
-+ Comments from 6 Media Outles (CNN, MSNBC, ABC, Fox News, Washington Post, New York Times)
++ Comments from 6 Media Outlets (CNN, MSNBC, ABC, Fox News, Washington Post, New York Times)
 
 <center>
 
@@ -337,15 +337,15 @@ class: inverse, center, middle
 
 --
 
-+ Development of a *Shiny App* to outsource the labeling task to `r length(unique(dt$coder))` coders.
++ Development of a *Shiny App* to outsource the labeling task to `r length(unique(dt$coder))` coders
 
 --
 
-+  Krippendorf's &alpha; shows intercoder reliablity of around .5 (increases after burn-in phase)
++  Krippendorf's &alpha; shows inter-coder reliability of around .5 (increases after burn-in phase)
 
 --
 
-+  In total we labeled `r nrow(dt)` comments and tweets.
++  In total we labeled `r nrow(dt)` comments and tweets
 
 
 ---
@@ -799,7 +799,7 @@ dat_time_xts_yt %>%
 
 <td style="padding-top: 1.5px;"></td>
 
-* Protests against removal of a Robet E. Lee monument
+* Protests against removal of a Robert E. Lee monument
 
 <td style="padding-top: 1.5px;"></td>
 
@@ -953,11 +953,11 @@ class: inverse, center, middle
 * More accountable AI programming:
     + AI deletion: problems with uncertainty and ambiguity of language
     + Need for *human in the loop*
-    + Include Feedback: possibility to appeal (restcricted times)
+    + Include Feedback: possibility to appeal (restricted times)
     + Algorithms must be responsive and transparent
     + Highlight content in question and reasons
     + Cross-checking algorithms to reduce error rate
-    + adverserial programming 
+    + Adversarial programming 
 
 
 
@@ -970,13 +970,9 @@ class: inverse, center, middle
 
 ## Thanks for Listening!
 
-[**Data and Code can be found in this GitHub Repository**](https://github.com/favstats/DecodingTheAltRight)
+**Slides:** <a href='decoding-the-altright.netlify.com'>https://decoding-the-altright.netlify.com/ </a>
 
----
-
-class: center, middle
-
-# Any Questions?
+**Code and Data on** <a href='https://github.com/favstats/DecodingTheAltRight'>GitHub</a>
 
 ---
 
