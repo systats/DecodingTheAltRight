@@ -957,7 +957,6 @@ class: inverse, center, middle
     + Algorithms must be responsive and transparent
     + Highlight content in question and reasons
     + Cross-checking algorithms to reduce error rate
-    + Adversarial programming 
 
 
 
