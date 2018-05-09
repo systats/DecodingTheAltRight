@@ -43,10 +43,73 @@ pacman::p_load(tidyverse, highcharter, magrittr)
 ## media data
 
 ```{r}
-# social_media <- get(load("data/abc.Rdata")) %>% 
-#   bind_rows(get(load("data/msnbc.Rdata"))) %>% 
-#   bind_rows(get(load("data/foxnews.Rdata"))) %>% 
-#   bind_rows(get(load("data/cnn.Rdata")))
+load_data <- function(x) {
+  get(load(paste0("data/media/", x)))
+}
+
+social_media <- dir("data/media") %>% 
+  as.list() %>% 
+  purrr::map(load_data) %>% 
+  purrr::reduce(bind_rows)
+
+
+
+
+```
+
+
+#### old
+
+```{r, fig.width=15}
+
+
+dat_time_whole <- social_media %>%
+  #sample_n(size = 10000) %>%
+  filter(platform != "fb") %>%
+  group_by(platform, page, cdate) %>%
+  #tally() %>%
+  count(pred1) %>%
+  mutate(perc = n/sum(n)) %>%
+  ungroup()
+
+dat_time_xts <- dat_time_whole %>%
+  mutate(perc = round(100*perc, 2)) %>% 
+  mutate(platform = case_when(
+      platform == "fb" ~ "Facebook",
+      platform == "tw" ~ "Twitter",
+      platform == "yt" ~ "YouTube"
+    )
+  ) %>%
+    mutate(page = forcats::fct_recode(page, 
+                                    `CNN` = "cnn",
+                                    `ABC` = "abc",
+                                    `MSNBC` = "msnbc",
+                                    `New York Times` = "nyt",
+                                    `Washington Post` = "wapo",
+                                    `Fox News` = "foxnews"
+                                    )) %>% 
+  filter(platform != "fb") %>%
+  # filter(sent == 0) %>%
+  filter(pred1 == 1) %>%
+  na.omit() 
+
+save(dat_time_xts, file = "data/dat_time_xts.Rdata")
+load("data/dat_time_xts.Rdata")
+
+
+```
+
+
+
+#### Timeline 1112
+
+
+```{r}
+dat_time2 <- dat_time_xts %>%
+  filter(cdate > as.Date("2017-08-06") & cdate < as.Date("2017-08-30")) 
+
+
+
 ```
 
 ## media
@@ -164,101 +227,6 @@ dat_time2 %>%
 
 ```
 
-#### old
-
-```{r, fig.width=15}
-
-
-dat_time_whole <- social_media %>%
-  #sample_n(size = 10000) %>%
-  filter(platform != "fb") %>%
-  group_by(platform, page, cdate) %>%
-  #tally() %>%
-  count(pred1) %>%
-  mutate(perc = n/sum(n)) %>%
-  ungroup()
-
-# gg1 <- dat_time_whole %>%
-# #  filter(!(page == "wapo" & platform == "yt" & cdate < as.Date("2017-06-01"))) %>%
-#   filter(pred1 == 1) %>%
-#   ggplot(aes(cdate, perc)) +
-#   geom_line() +
-#   scale_x_date() +
-#   facet_grid(page  ~ platform, scales = "free") +
-#   ggthemes::theme_hc() +
-#   geom_vline(xintercept = as.Date("2017-08-12"), color = "red") +
-#     geom_vline(xintercept = as.Date("2017-01-20"), color = "red")
-# #ggsave(gg1, file = "gg_time_all_media.png", width = 10)
-# gg1
-
-
-dat_time_xts <- dat_time_whole %>%
-  mutate(perc = round(100*perc, 2)) %>% 
-  mutate(platform = case_when(
-      platform == "fb" ~ "Facebook",
-      platform == "tw" ~ "Twitter",
-      platform == "yt" ~ "YouTube"
-    )
-  ) %>%
-    mutate(page = forcats::fct_recode(page, 
-                                    `CNN` = "cnn",
-                                    `ABC` = "abc",
-                                    `MSNBC` = "msnbc",
-                                    `New York Times` = "nyt",
-                                    `Washington Post` = "wapo",
-                                    `Fox News` = "foxnews"
-                                    )) %>% 
-  filter(platform != "fb") %>%
-  # filter(sent == 0) %>%
-  filter(pred1 == 1) %>%
-  na.omit() 
-
-save(dat_time_xts, file = "slides/data/dat_time_xts.Rdata")
-load("slides/data/dat_time_xts.Rdata")
-
-
-
-dat_time_xts %>% 
-  filter(platform == "YouTube") %>% 
-  chart_all() %>% 
-      hc_title(text = "Percentage of Classified Comments per Day - YouTube",
-             style = list(fontSize = "18px")) 
-
-
-dat_time_xts %>% 
-  filter(platform == "Twitter") %>% 
-  chart_all() %>% 
-      hc_title(text = "Percentage of Classified Comments per Day - Twitter",
-             style = list(fontSize = "18px")) 
-
-
-```
-
-
-
-#### Timeline 1112
-
-
-```{r}
-dat_time2 <- dat_time_xts %>%
-  filter(cdate > as.Date("2017-08-06") & cdate < as.Date("2017-08-30")) 
-
-
-
-
-# gg2 <- dat_time2 %>%
-#   filter(pred1 == 1) %>%
-#   ggplot(aes(cdate, perc)) +
-#   #geom_smooth(se=F) +
-#   geom_line(alpha = .5) +
-#   #scale_x_date() +
-#   facet_grid(page  ~ platform, scales="free") +
-#   ggthemes::theme_hc() +
-#   geom_vline(xintercept = as.Date("2017-08-11"), color = "red")
-#   #geom_vline(xintercept = as.Date("2017-01-20"), color = "red")
-# #ggsave(gg2, file = "gg_charl.png", width = 10)
-# gg2
-```
 
 
 
@@ -287,7 +255,7 @@ library(highcharter)
 
 charlottesville_charter <- dat_time2
 
-save(charlottesville_charter, file = "slides/data/charlottesville_charter.Rdata")
+save(charlottesville_charter, file = "data/charlottesville_charter.Rdata")
 
 
 

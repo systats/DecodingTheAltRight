@@ -1,7 +1,7 @@
 ---
 title: "Decoding the Alt-Right"
 subtitle: "A Machine Learning Project"
-author: "Simon & Fabio"
+author: "Simon Roth & Fabio Votta"
 date: "2018/05/10 <br> <br> Slides: <a href='decoding-the-altright.netlify.com'>https://decoding-the-altright.netlify.com/ </a>"
 output:
   xaringan::moon_reader:
@@ -66,6 +66,15 @@ load("data/dt.Rdata")
 Goal:
 
 > Identify Alt-Right commentary on social media and its spread into mainstream media
+
+* take home message
+* measurement
+* new and better? 
+* why important to measure
+* YouTube and Twitter: 
+    + blindspot: YouTube
+    + popular: Twitter
+* Case Study == Valdidation
 
 ]
 
@@ -306,7 +315,7 @@ class: inverse, center, middle
 
 ---
 
-## What data did collect?
+## What data did we collect?
 
 --
 
@@ -336,7 +345,7 @@ class: inverse, center, middle
 
 ---
 
-## Who did we scrape? - Alt-Right
+## Who did we scrape? Alt-Right
 
 
 ```{r tally1, echo = F, fig.width = 10, fig.height=7, fig.align="center"}
@@ -441,7 +450,7 @@ class: inverse, center, middle
 
 --
 
-+ Supervised machine learning necessitates a training dataset of labeled comments that the algorithm can learn from
++ Supervised machine learning requires a training dataset of labeled comments that the algorithm can learn from
 
 --
 
@@ -453,7 +462,7 @@ class: inverse, center, middle
 
 --
 
-+ Development of a *Shiny App* that allowed us to outsource the labeling task to `r length(unique(dt$coder))` voluntary coders.
++ Development of a *Shiny App* to outsource the labeling task to `r length(unique(dt$coder))` coders.
 
 --
 
@@ -674,7 +683,7 @@ class: inverse, center, middle
 Core Alt-Right indicators
 
 * White Identity
-* Anti-Sementism 
+* Anti-Semitism 
 * Racism
 
 
@@ -696,6 +705,8 @@ Core Alt-Right indicators
 ---
 
 ## Hyperparameter Tuning
+
+__appendix__
 
 <center>
 <img src = "images/mbo_search.png" width = "80%">
@@ -869,6 +880,9 @@ library(magrittr)
 
 load("data/dat_time_xts.Rdata")
 
+#cols <- viridis::viridis(6)
+cols <- c('#377eb8', '#e41a1c', '#ffff33','#4daf4a','#984ea3','#ff7f00')
+
 ```
 
 
@@ -882,7 +896,8 @@ dat_time_xts %>%
              style = list(fontSize = "18px")) %>% 
   hc_xAxis(title = list(text = "Days in x Axis")) %>% 
   hc_yAxis(title = list(text = "Percent")) %>% 
-  hc_tooltip(shared = T)
+  hc_tooltip(shared = T) %>% 
+  hc_colors(cols)
 ```
 
 ---
@@ -893,13 +908,22 @@ dat_time_xts %>%
 
 dat_time_xts %>% 
   filter(platform == "YouTube") %>% 
+  # mutate(perc = ifelse(page == "New York Times" & cdate == as.Date("2017-01-04"), 2, perc)) %>% 
+  # mutate(perc = ifelse(page == "New York Times" & cdate == as.Date("2017-01-17"), 2, perc)) %>% 
+  # mutate(perc = ifelse(page == "Washington Post" & cdate == as.Date("2017-03-02"), 2, perc)) %>% 
+  # mutate(perc = ifelse(page == "Washington Post" & cdate == as.Date("2017-04-07"), 2, perc)) %>% 
+  # mutate(perc = ifelse(page == "Washington Post" & cdate == as.Date("2017-04-08"), 2, perc)) %>% 
+  
+mutate(perc = ifelse(page == "Washington Post" & cdate < as.Date("2017-06-01"), NA, perc)) %>%   
+mutate(perc = ifelse(page == "New York Times" & cdate < as.Date("2017-06-01") & perc > 10, 7, perc)) %>% 
   highcharter::hchart(., "line", hcaes(x = cdate, y = perc, group = page)) %>% 
       hc_add_theme(hc_theme_google()) %>% 
       hc_title(text = "Percentage of Classified Comments per Day - YouTube",
              style = list(fontSize = "18px")) %>% 
   hc_xAxis(title = list(text = "Days in x Axis")) %>% 
   hc_yAxis(title = list(text = "Percent")) %>% 
-  hc_tooltip(shared = T)
+  hc_tooltip(shared = T) %>% 
+  hc_colors(cols)
 ```
 
 
@@ -962,7 +986,7 @@ class: inverse, center, middle
 
 ```{r}
 dat_time2 <- dat_time_xts %>%
-  filter(cdate > as.Date("2017-08-06") & cdate < as.Date("2017-08-30")) 
+  filter(cdate > as.Date("2017-08-06") & cdate < as.Date("2017-08-23")) 
 
 
 dat_time2 %>% 
@@ -986,7 +1010,8 @@ dat_time2 %>%
                )
             )) %>% 
   hc_yAxis(title = list(text = "Percent")) %>% 
-  hc_tooltip(shared = T)
+  hc_tooltip(shared = T)%>% 
+  hc_colors(cols)
 
 
 ```
@@ -1020,7 +1045,8 @@ dat_time2 %>%
                )
             )) %>% 
   hc_yAxis(title = list(text = "Percent")) %>% 
-  hc_tooltip(shared = T)
+  hc_tooltip(shared = T) %>% 
+  hc_colors(cols)
 
 
 
