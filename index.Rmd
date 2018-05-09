@@ -226,7 +226,11 @@ class: inverse, center, middle
 
 + Text data from three Platforms: Facebook, Twitter and YouTube 
 
-<img src="images/socialmedia.png">
+<center>
+
+<img src="images/socialmedia.png" width="80%">
+
+</center>
 
 --
 
@@ -236,7 +240,11 @@ class: inverse, center, middle
 
 + Comments from 6 Media Outles (CNN, MSNBC, ABC, Fox News, Washington Post, New York Times)
 
-<img src="images/media.png">
+<center>
+
+<img src="images/media.png" width="80%">
+
+</center>
 
 --
 
@@ -791,11 +799,11 @@ dat_time_xts_yt %>%
 
 <td style="padding-top: 1.5px;"></td>
 
-* Many Alt-Right Figures were present (Richard Spencer, Matthew Heimbach etc.)
+* Protests against removal of a Robet E. Lee monument
 
 <td style="padding-top: 1.5px;"></td>
 
-* Protests against removal of a Robet E. Lee monument
+* Many Alt-Right Figures were present (Richard Spencer, Matthew Heimbach etc.)
 
 <td style="padding-top: 1.5px;"></td>
 
