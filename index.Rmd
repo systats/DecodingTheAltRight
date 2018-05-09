@@ -67,15 +67,6 @@ Goal:
 
 > Identify Alt-Right commentary on social media and its spread into mainstream media
 
-* take home message
-* measurement
-* new and better? 
-* why important to measure
-* YouTube and Twitter: 
-    + blindspot: YouTube
-    + popular: Twitter
-* Case Study == Valdidation
-
 ]
 
 ---
@@ -83,59 +74,6 @@ Goal:
 ## Outline
 
 .onehundredtwenty[
-
-<!-- TODO: -->
-
-+ framing/RED LINE
-+ probe probe probe
-+ PRUNING
-
-<!-- * Repo Setup -->
-<!-- * Homepage -->
-<!-- * Intearctive plots -->
-<!-- * QR Code/Bitly -->
-<!-- * Hero Banner: Banner + Übergang in Charlottsville torches march/metalic -->
-<!-- * DecodingTheAltRight.eu -->
-
-
-<!-- 1. Theoretical Setting -->
-<!--     * What is the alt-right? -->
-<!-- 2. Data Collection -->
-<!--     * Where are they? -->
-<!--     * Who did we scrape? -->
-<!--     * wheach media outlets? logo -->
-<!--         + descriptives -->
-<!--     * info: -->
-<!--         + Timerange -->
-<!--         + -->
-<!-- 3. Coding Framework -->
-<!--     * Coding Scheme -->
-<!--     * App -->
-<!--     * Voluntary Coders (tree) -->
-<!--     * Reliability and Validation -->
-<!--     * Descripives of labeled data -->
-
-
-<!-- 4. Machine Learning -->
-<!--     * Train/Test Split -->
-<!--     * RNN/LSTM/MLP language models  -->
-<!--     * `tidyMBO` -->
-<!--     * t-SNE word embedding -->
-<!--     * Performance tables -->
-<!-- 5. Predictive Analysis -->
-<!--     * Terror -->
-<!--     * Hoax: Narrative. Coparative Narratives. Frist occurance. Charelltsvill Quebec Mosque shooter.  -->
-<!--     * Media over time -->
-<!--     * ALt-Right figures over time.  -->
-<!-- 6. Policy Implications -->
-<!--     * Counter Narratives -->
-<!--     * AI deletion: What about uncertainty and ambiguity of language. -->
-<!--     * Human in the loop.  -->
-<!--     * Feeback loop: get personal feedback. Restcricted times. -->
-<!--     * Algorithemn must be repsonsive and transparent on how decisions are made. Highlight problematic content and a reason why.  -->
-<!--     * Cross Checking Algorithemns improve the comprehension of how the system works and we get a chance to critize its blindspots.  -->
-<!--     * More accountable AI programming.  -->
-
 
 1. What is the Alt-Right?
 2. Data Collection
@@ -157,15 +95,6 @@ class: inverse, center, middle
 class: inverse, center, middle
 
 ## What is the Alt-Right?
-
-<!-- + Term coined by Richard Spencer -->
-
-<!-- + Goals -->
-<!--     * allowed ideas long seen as unacceptable to mainstream media to seep into public discourse (opening the Overton window) -->
-<!--     * By re-branding “white nationalism” or “white supremacy” as “the alt-right,” these groups played on the media’s fascination with novelty to give their ideas mass exposure -->
-<!--     * As Daily Stormer founder Andrew Anglin puts it, “Non-ironic Nazism masquerading as ironic Nazism.” -->
-
-<!-- Why use it? The Nazis called themselves national socialists and we shouldn't call them socialists but they were a distinct phenomenon. They're also more diverse as we shall see -->
 
 ---
 .eightyfive[
@@ -202,7 +131,6 @@ class: center, middle
 
 ]
 
-<!-- Florian Cramer -->
 
 ---
 
@@ -284,33 +212,6 @@ The Alt-Right consists of...
 
 <img src="images/flower7.png">
 
-<!-- bps 324.519 Abonnenten -->
-<!-- 791.744 Abonnenten -->
-
-<!-- --- -->
-
-
-<!-- ## Groups of the Alt-Right III -->
-
-<!-- * Open White Supremacists (Richard Spencer, National Policy Institute, KKK) -->
-<!-- * Neo Nazi Movements (Daily Stormer, Fash the Nation) -->
-<!-- * YouTube Skeptic Community -->
-<!-- * Online Discussion Boards (Sections like /pol on 4chan or /r the_Donald on reddit) -->
-<!-- * Antifeminist YouTube (Sargon of Akkad) -->
-<!-- * "Menosphere" (Roosh V, Return of Kings) -->
-
-<!-- Sometimes very incompatible movements. -->
-
-
-<!-- --- -->
-
-<!-- ## Alt-Right or Alt-Light -->
-
-<!-- Some scholars have made the distinction between Alt-Right and Alt-Light: -->
-
-<!-- > Media outlets that espouse some far-right talking points while strategically excluding more extreme beliefs such as scientific racism or anti-Semitism. Example: Breitbart News. -->
-
-
 ---
 class: inverse, center, middle
 
@@ -353,48 +254,10 @@ class: inverse, center, middle
 
 
 ```{r tally1, echo = F, fig.width = 10, fig.height=7, fig.align="center"}
-load("data/social_altright_plot.Rdata")
+load("data/slide_altright_plot.Rdata")
 
 
-data.frame(platform = "YouTube", pl1 = 3, 
-           page = as.factor("Sargon of Akkad"),
-           n = 611369) %>% 
-  bind_rows(social_altright_plot) %>%
-  mutate(page = forcats::fct_recode(page, 
-                                    `Milo Yiannopoulos` = "milo",
-                                    `Alex Jones/Infowars` = "alexjones",
-                                    `Mike Cernovich` = "cernovich",
-                                    `Paul Joseph Watson` = "pjw",
-                                    `Breitbart` = "breitbart",
-                                    `Steven Crowder` = "crowder",
-                                    `Rebel Media` = "TheRebelTV",
-                                    `Blaire White` = "blaire_white",
-                                    `Tommy Robinson` = "robinson",
-                                    `Stefan Molyneux/Freedomain Radio` = "molymeme",
-                                    `Red Ice TV` = "redicetv",
-                                    `Black Pigeon Speaks` = "bps",
-                                    `Styxhexenhammer` = "styxenhammer",
-                                    `Lauren Southern` = "lauren",
-                                    `Baked Alaska` = "bakedalaska",
-                                    `Return of Kings` = "returnofkings",
-                                    `VDARE` = "vdare",
-                                    `Roosh V` = "roosh",
-                                    `RamZPaul` = "ramzpaul",
-                                    `Brittany Pettibone` = "pettibone",
-                                    `Arktos Media` = "arktosmedia",
-                                    `Gavin McInnes` = "gavin",
-                                    `The National Policy Institute/Radix Journal` = "NPIRadix",
-                                    `Millenial Woes` = "mw",
-                                    `Roaming Millenial` = "roaming",
-                                    `Richard Spencer` = "richardspencer",
-                                    `Identity Evropa` = "europa",
-                                    `Paul Elam` = "paulelam",
-                                    `AltRight.com` = "altright",
-                                    `Tara McCarthy` = "tara",
-                                    `Counter-Currents` = "countercurr",
-                                    `Ann Coulter` = "anncoulter",
-                                    `American Renaissance` = "americanrenaissance"
-                                    )) %>% 
+slide_altright_plot %>% 
   ggplot(aes(page, platform, fill = n)) +
   geom_tile() +
   coord_flip() +
@@ -581,13 +444,7 @@ dt %>%
 ## Descriptives of Labeled Data
 
 ```{r, echo = F, fig.width = 10, fig.height=7, fig.align="center"}
-# 1 illegal
-# 2 nonwestern
-# 3 race
 
-# 1 in general
-# 2 white
-# 3 male
 
 library(tidyverse)
 load("data/dt.Rdata")
@@ -746,8 +603,6 @@ models_data %>%
 .pull-right[
 
 ```{r}
-# x <- c(1, 0 , 1, 1, 0, 1, 1, 0, 1)
-# y <- c(1, 1 ,0, 1, 0, 1, 1, 0, 0)
 
 confusion_real <- function (x, y, lib = "hchart", text_resize = F, info = F, info_list = F, 
   ...) 
@@ -892,10 +747,9 @@ dat_time_xts %>%
 ## YouTube 2017
 
 ```{r}
+load("data/dat_time_xts_yt.Rdata")
 
-dat_time_xts %>% 
-  mutate(perc = ifelse(platform == "YouTube" & cdate < as.Date("2017-06-01") & page == "Washington Post", NA, perc)) %>% 
-  mutate(perc = ifelse(platform == "YouTube" & cdate < as.Date("2017-06-01") & page == "New York Times" & perc >= 10, 7, perc)) %>% 
+dat_time_xts_yt %>% 
   filter(platform == "YouTube") %>% 
   highcharter::hchart(., "line", hcaes(x = cdate, y = perc, group = page)) %>% 
       hc_add_theme(hc_theme_google()) %>% 
@@ -933,26 +787,19 @@ dat_time_xts %>%
 
 .pull-left[
 
-
-* Protests officially against removing a Statue of Robet E. Lee
-
-
+* 11th and 12th August of 2017
 
 <td style="padding-top: 1.5px;"></td>
 
 * Many Alt-Right Figures were present (Richard Spencer, Matthew Heimbach etc.)
 
+<td style="padding-top: 1.5px;"></td>
 
+* Protests against removal of a Robet E. Lee monument
 
 <td style="padding-top: 1.5px;"></td>
 
-* 11th and 12th August of 2017
-
-
-
-<td style="padding-top: 1.5px;"></td>
-
-* Lead to a deliberate attack and death of a counter-protester Heather Heyer
+* Lead to a vehicular attack and death of a counter-protester Heather Heyer
 
 ]
 
@@ -994,7 +841,7 @@ dat_time2 %>%
                )
             )) %>% 
   hc_yAxis(title = list(text = "Percent")) %>% 
-  hc_tooltip(shared = T)%>% 
+  hc_tooltip(shared = T) %>% 
   hc_colors(cols)
 
 
@@ -1051,7 +898,7 @@ dat_time2 %>%
 
 --
 
-> "Lol counter protesters that's what you get. Let the white people have there pride. I use the 2nd amendment so If they try something I'm strapped just leave them alone. There culture is being torn apart such as taking down the confederate monuments and stoping white pride events. Black people can parade  streets and have black pride. But not white people? The tables have turned. Honestly I really dislike niggers I wish we would have never brought them from Africa."
+> "Lol counter protesters that's what you get. Let the white people have there pride. Black people can parade  streets and have black pride. But not white people? The tables have turned. Honestly I really dislike niggers I wish we would have never brought them from Africa."
 
 --
 
@@ -1073,16 +920,11 @@ dat_time2 %>%
 
 * How does the Alt-Right react to terror attacks
 
--- 
 * Tracking stories and misinformation (like the hoax that two Syrian refugees were responsible for the Quebec Mosque Attack)
-
---
-
 
 * Distinguishing between Alt-Light and Alt-Right content
 
 ---
-
 
 class: inverse, center, middle
 
@@ -1096,17 +938,19 @@ class: inverse, center, middle
 
 * Account for the *multidimensionality* of extremism
     + extremism is not only limited to hate speech, it's also ideological
-* More accountable AI programming:
-    * AI deletion: What about uncertainty and ambiguity of language.
-    * Human in the loop. 
-    * Feedback loop: get personal feedback. Restcricted times.
-    * Algorithm must be repsonsive and transparent on how decisions are made. 
-    + Highlight problematic content and a reason why. 
-    * Cross-checking algorithms improve the comprehension of how the system works and we get a chance to critize its blindspots
-
-* Counter Narratives
-
+    
+    
 * Taking complaints about ambiguity of hate speech seriously
+
+* More accountable AI programming:
+    + AI deletion: problems with uncertainty and ambiguity of language
+    + Need for *human in the loop*
+    + Include Feedback: possibility to appeal (restcricted times)
+    + Algorithms must be responsive and transparent
+    + Highlight content in question and reasons
+    + Cross-checking algorithms to reduce error rate
+    + adverserial programming 
+
 
 
 
@@ -1118,7 +962,7 @@ class: inverse, center, middle
 
 ## Thanks for Listening!
 
-[**Data and Code can be found in this GitHub Repository**](https://www.splcenter.org/fighting-hate/extremist-files/ideology/alt-right)
+[**Data and Code can be found in this GitHub Repository**](https://github.com/favstats/DecodingTheAltRight)
 
 ---
 
@@ -1140,7 +984,7 @@ Marwick, A., & Lewis, R. (2017). Media manipulation and disinformation online. N
 
 class: inverse, center, middle
 
-## Appenidx
+## Appendix
 
 ---
 
@@ -1149,19 +993,3 @@ class: inverse, center, middle
 <center>
 <img src = "images/mbo_search.png" width = "80%">
 </center>
-
----
-
-
-## Fallbacks
-
-* Keyword counting
-* Official racesim dictionaries.
-* Network analysis.
-    + Link share network
-    + user community
-* Gender
-* Terror
-* Story tracing/hoax
-  
-
