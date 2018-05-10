@@ -958,10 +958,6 @@ class: inverse, center, middle
     + Highlight content in question and reasons
     + Cross-checking algorithms to reduce error rate
 
-
-
-
-
 ---
 
 class: inverse, center, middle
