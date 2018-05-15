@@ -1,2 +1,2 @@
 # DecodingTheAltRight
-This is a machine learning project that aims at predicting right-wing talking points from social media content.
+This is a machine learning project that aims at predicting Alt-Right talking points from social media content.
